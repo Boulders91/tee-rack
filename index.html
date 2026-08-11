@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tee of the Day — Rate the Rack</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#1b1713; --bg-soft:#241f1a; --cotton:#ece7da; --cotton-dim:#d8d2c2;
+    --ink:#17151f; --accent:#ff4b2e; --chalk:#8fb7cc; --line:#3a332b; --faint:#9a9083; --ok:#7fc97f;
+    --display:'Archivo Black','Arial Black',Impact,sans-serif;
+    --body:'Space Grotesk',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--cotton);font-family:var(--body);min-height:100vh;padding-bottom:40px}
+  .wrap{max-width:430px;margin:0 auto;padding:18px 16px 0}
+  button{font-family:var(--body);cursor:pointer}
+  button:focus-visible{outline:2px solid var(--chalk);outline-offset:2px}
+  .hdr{display:flex;justify-content:space-between;align-items:baseline}
+  .brand{font-family:var(--display);font-size:17px;letter-spacing:.04em}
+  .brand span{color:var(--accent)}
+  .count{font-size:11px;color:var(--faint)}
+  .bar{height:3px;background:var(--line);border-radius:2px;margin-top:8px}
+  .bar>div{height:100%;background:var(--accent);border-radius:2px;transition:width .3s}
+  .sync{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg-soft)}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--faint);flex-shrink:0}
+  .dot.on{background:var(--ok)} .dot.err{background:var(--accent)}
+  .sync .st{font-size:11px;color:var(--faint);flex:1}
+  .sync input{flex:2;min-width:0;background:var(--bg);border:1px solid var(--line);border-radius:5px;color:var(--cotton);font-size:12px;padding:7px 8px;font-family:var(--body)}
+  .sync .go{padding:7px 10px;border-radius:5px;border:1px solid var(--chalk);background:transparent;color:var(--chalk);font-size:11px;font-weight:700}
+  .daynav{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+  .arrow{background:none;border:1.5px solid var(--line);color:var(--cotton);width:42px;height:42px;border-radius:6px;font-size:18px}
+  .arrow:disabled{color:var(--line);cursor:default}
+  .daydate{font-family:var(--display);font-size:22px;letter-spacing:.06em;text-align:center}
+  .daydate small{color:var(--chalk);font-size:14px;font-family:var(--display)}
+  .daymeta{font-size:10px;color:var(--faint);letter-spacing:.12em;text-align:center}
+  .teewrap{position:relative;width:100%;max-width:340px;margin:10px auto 0}
+  .teewrap svg{width:100%;display:block;filter:drop-shadow(0 14px 24px rgba(0,0,0,.45))}
+  .print{position:absolute;top:26%;left:26%;width:48%;height:56%;display:flex;align-items:center;justify-content:center;text-align:center;transform:rotate(-1.2deg)}
+  .print div{font-family:var(--display);line-height:1.14;color:var(--ink);letter-spacing:.01em;text-transform:uppercase;word-break:break-word}
+  .ctx{margin-top:6px;text-align:center;padding:0 6px;font-size:13.5px;line-height:1.5;color:var(--cotton-dim)}
+  .src{display:inline-block;margin-top:8px;font-size:12px;color:var(--chalk);text-decoration:none;border-bottom:1px solid var(--chalk);padding-bottom:1px}
+  .ticket{margin-top:18px;background:var(--bg-soft);border:1px solid var(--line);border-radius:10px;padding:14px 14px 16px}
+  .ticket-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
+  .ticket-hd .lbl{font-size:10px;letter-spacing:.16em;color:var(--faint)}
+  .ticket-hd .saved{font-size:10px;color:var(--accent);letter-spacing:.1em}
+  .row{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px dashed var(--line)}
+  .row .lab{width:72px;flex-shrink:0}
+  .row .lab b{display:block;font-family:var(--display);font-weight:400;font-size:12px;letter-spacing:.08em;color:var(--cotton)}
+  .row .lab i{font-style:normal;font-size:10px;color:var(--faint)}
+  .pills{display:flex;gap:6px;flex:1;justify-content:flex-end}
+  .pill{width:38px;height:38px;border-radius:4px;border:1.5px solid var(--line);background:transparent;color:var(--cotton-dim);font-weight:700;font-size:15px}
+  .pill.on{border-color:var(--accent);background:var(--accent);color:#fff}
+  .wearbtn{width:60px;height:38px;border-radius:4px;border:1.5px solid var(--line);background:transparent;color:var(--cotton-dim);font-weight:700;font-size:14px}
+  .wearbtn.on{border-color:var(--accent);background:var(--accent);color:#fff}
+  .tags-lbl{font-size:10px;letter-spacing:.14em;color:var(--faint);margin:12px 0 8px}
+  .tags{display:flex;flex-wrap:wrap;gap:6px}
+  .tag{padding:6px 10px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--faint);font-size:11px;letter-spacing:.04em}
+  .tag.on{border-color:var(--chalk);background:rgba(143,183,204,.15);color:var(--chalk)}
+  .ck{display:flex;gap:8px;margin-top:14px}
+  .ck button{flex:1;height:44px;border-radius:6px;border:1.5px solid var(--line);background:transparent;color:var(--cotton-dim);font-weight:700;font-size:13px}
+  .ck .crown.on{border-color:#e8b93b;background:rgba(232,185,59,.16);color:#e8b93b}
+  .ck .kill.on{border-color:var(--accent);background:rgba(255,75,46,.14);color:var(--accent)}
+  .foot{display:flex;gap:8px;margin-top:14px}
+  .nextbtn{flex:1.4;height:48px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-family:var(--display);font-size:13px;letter-spacing:.06em}
+  .copybtn{flex:1;height:48px;border-radius:6px;border:1.5px solid var(--line);background:transparent;color:var(--cotton);font-size:12px;font-weight:700}
+  .copybtn.done{color:var(--chalk)}
+  .note{margin-top:16px;text-align:center;font-size:10.5px;color:var(--faint);line-height:1.6}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <div class="brand">TEE OF THE DAY <span>/</span> RATE THE RACK</div>
+    <div class="count" id="count"></div>
+  </div>
+  <div class="bar"><div id="prog" style="width:0%"></div></div>
+
+  <div class="sync" id="syncbar">
+    <div class="dot" id="dot"></div>
+    <div class="st" id="syncst">local only</div>
+    <input id="tok" type="password" placeholder="paste GitHub token to enable live sync" autocomplete="off" />
+    <button class="go" id="tokgo">SYNC</button>
+  </div>
+
+  <div class="daynav">
+    <button class="arrow" id="prev" aria-label="Previous day">←</button>
+    <div>
+      <div class="daydate" id="daydate"></div>
+      <div class="daymeta" id="daymeta"></div>
+    </div>
+    <button class="arrow" id="next" aria-label="Next day">→</button>
+  </div>
+
+  <div class="teewrap">
+    <svg viewBox="0 0 340 330" aria-hidden="true">
+      <path d="M118 18 L64 40 L18 96 L62 132 L84 110 L84 306 Q84 316 94 316 L246 316 Q256 316 256 306 L256 110 L278 132 L322 96 L276 40 L222 18 Q212 44 170 44 Q128 44 118 18 Z" fill="#ece7da"/>
+      <path d="M118 18 Q128 44 170 44 Q212 44 222 18 L214 15 Q206 34 170 34 Q134 34 126 15 Z" fill="#c9c3b2"/>
+      <path d="M84 110 L62 132 L18 96 L64 40 L118 18 L84 110" fill="#ece7da" stroke="#d3cdbc" stroke-width="1"/>
+      <path d="M256 110 L278 132 L322 96 L276 40 L222 18 L256 110" fill="#ece7da" stroke="#d3cdbc" stroke-width="1"/>
+    </svg>
+    <div class="print"><div id="slogan"></div></div>
+  </div>
+
+  <div class="ctx">
+    <span id="ctx"></span><br/>
+    <a class="src" id="srclink" target="_blank" rel="noopener noreferrer"></a>
+  </div>
+
+  <div class="ticket">
+    <div class="ticket-hd">
+      <div class="lbl">PRINT JOB TICKET — SCORE IT</div>
+      <div class="saved" id="saved" style="display:none">SAVED ✓</div>
+    </div>
+    <div class="row"><div class="lab"><b>TOPIC</b><i>right obsession?</i></div><div class="pills" id="t"></div></div>
+    <div class="row"><div class="lab"><b>HUMOR</b><i>groan → screenshot</i></div><div class="pills" id="h"></div></div>
+    <div class="row"><div class="lab"><b>EDGE</b><i>1 corp · 3 based · 5 spicy</i></div><div class="pills" id="e"></div></div>
+    <div class="row"><div class="lab"><b>WEAR IT</b><i>on your body</i></div>
+      <div class="pills">
+        <button class="wearbtn" id="wY">YES</button>
+        <button class="wearbtn" id="wN">NO</button>
+      </div>
+    </div>
+    <div class="tags-lbl">DIRECTION TAGS (OPTIONAL)</div>
+    <div class="tags" id="tags"></div>
+    <div class="ck">
+      <button class="crown" id="crown">🏆 CROWN IT</button>
+      <button class="kill" id="kill">💀 KILL IT</button>
+    </div>
+  </div>
+
+  <div class="foot">
+    <button class="nextbtn" id="nextUnrated">NEXT UNRATED →</button>
+    <button class="copybtn" id="copy">COPY RESULTS</button>
+  </div>
+
+  <div class="note" id="note"></div>
+</div>
+
+<script>
+const CONFIG = { owner: "Boulders91", repo: "tee-rack", path: "ratings.json", branch: "main" };
+
+const DAYS = [
+  { id:"2026-08-11", date:"AUG 11", dow:"TUE", slogan:"RUNNING ON EMPTY SINCE 1983 — ME & THE STRATEGIC PETROLEUM RESERVE", context:"The SPR slid under 300M barrels — lowest since 1983 — with crude pushing past $82 as U.S.–Iran talks stalled.", url:"https://ts2.tech/en/stock-market-today-11-08-2026/", source:"TS2 Markets" },
+  { id:"2026-08-10", date:"AUG 10", dow:"MON", slogan:"I PAID MORE FOR WINDOWS SO THE WEATHER APP COULD EAT MY RAM", context:"Microsoft reportedly hiked Windows 11 license prices right as its web-wrapper weather app got caught devouring memory.", url:"https://www.techradar.com/news/archive", source:"TechRadar" },
+  { id:"2026-08-09", date:"AUG 9", dow:"SUN", slogan:"OHTANI ENDED A 7-GAME SKID WITH AN INFIELD SINGLE. I CAN'T END A MEETING ON TIME.", context:"Shohei's 10th-inning RBI infield single finally stopped the Dodgers' bleeding, 2-1 over Arizona.", url:"https://www.espn.com/espn/latestnews", source:"ESPN" },
+  { id:"2026-08-08", date:"AUG 8", dow:"SAT", slogan:"FOOTBALL IS BACK* (*PRESEASON. REMAIN CALM.)", context:"NFL preseason weekend kicked off. The whole vibe: football's back, but it's also very much still summer.", url:"https://www.nbcsports.com/nfl/profootballtalk/rumor-mill/news/what-you-missed-this-weekend-august-10-2026-edition", source:"NBC Sports / PFT" },
+  { id:"2026-08-07", date:"AUG 7", dow:"FRI", slogan:"ANOTHER ONE LOST TO AN F1 DRIVER", context:"Lewis Hamilton's loved-up photos with Kim Kardashian topped every celebrity feed on Earth.", url:"https://x.com/usweekly/status/2085927769666367814", source:"Us Weekly" },
+  { id:"2026-08-06", date:"AUG 6", dow:"THU", slogan:"CRIED AT MY BROTHER'S WEDDING. IT'S CALLED BEING A KELCE.", context:"Kylie Kelce revealed why Jason sobbed intensely at his brother's wedding, and the internet ate it alive.", url:"https://entertainmentnow.com/news/", source:"EntertainmentNow" },
+  { id:"2026-08-05", date:"AUG 5", dow:"WED", slogan:"GOOGLE ASSISTANT 2016–2026: REPLACED BY AI, JUST LIKE THE REST OF US", context:"Google confirmed it's killing the old Assistant for good on September 4. A moment of silence for 'OK Google.'", url:"https://techstartups.com/2026/08/05/top-tech-news-today-august-5-2026-anthropic-google-microsoft-openai-samsung-spacex-uber-more/", source:"TechStartups" },
+  { id:"2026-08-04", date:"AUG 4", dow:"TUE", slogan:"AMAZON HIT $3 TRILLION AND ALL I GOT WAS THIS $4,000 GPU", context:"Amazon joined the $3T club on AI cloud demand the same day RTX 5090s were reselling north of $4K.", url:"https://techstartups.com/2026/08/04/top-tech-news-today-august-4-2026-anthropic-apple-google-meta-openai-palantir-more/", source:"TechStartups" },
+  { id:"2026-08-03", date:"AUG 3", dow:"MON", slogan:"MY ENTIRE ROSTER GOT TRADED AND ALL I GOT WAS PROSPECTS", context:"MLB deadline day: nearly 50 deals before 6 p.m., capped by the shock Rutschman-to-Boston blockbuster.", url:"https://www.mlb.com/news/mlb-trade-deadline-2026-deal-tracker", source:"MLB.com" },
+  { id:"2026-08-02", date:"AUG 2", dow:"SUN", slogan:"AS OF TODAY, ROBOTS MUST LEGALLY ADMIT THEY'RE ROBOTS. HUMANS STILL LIE FOR FREE.", context:"The EU's rule requiring AI systems to disclose their non-human nature to users took effect.", url:"https://etcjournal.com/2026/08/01/august-2026-where-ai-is-headed-in-next-5-years/", source:"ETC Journal" },
+  { id:"2026-08-01", date:"AUG 1", dow:"SAT", slogan:"THE DODGERS ARE TOO BIG TO FAIL", context:"The two-time defending champs landed Tarik Skubal in a Saturday-night blockbuster. Small-market fans looked away.", url:"https://www.espn.com/mlb/story/_/id/49521556/mlb-trade-deadline-2026-reaction-biggest-winners-losers-dodgers-orioles-phillies-brewers", source:"ESPN" },
+  { id:"2026-07-31", date:"JUL 31", dow:"FRI", slogan:"THEY PUT THE WORLD CUP IN PRIVATE EQUITY", context:"Outrage grew over FIFA's plan to sell a World Cup stake to a Kushner-linked private equity firm.", url:"https://www.democracynow.org/2026/7/31/headlines", source:"Democracy Now" },
+  { id:"2026-07-30", date:"JUL 30", dow:"THU", slogan:"NIGERIA HAS MOVED. PLEASE UPDATE YOUR MAPS. —THE STATE DEPT", context:"A senior State Dept official presented a map of Africa that misplaced several countries. The internet did the rest.", url:"https://www.dailykos.com/stories/2026/7/30/800077182/community/overnight-news-digest-july-30th-2026/", source:"Daily Kos digest" },
+  { id:"2026-07-26", date:"JUL 26", dow:"SUN", slogan:"POGAČAR ×5. YOUR PELOTON STREAK IS SAFE THOUGH.", context:"Tadej Pogačar won the Tour de France for a record-tying fifth time.", url:"https://www.britannica.com/topic/Major-Events-of-2026", source:"Britannica" },
+  { id:"2026-07-24", date:"JUL 24", dow:"FRI", slogan:"CHARLI, TYLA & THE STROKES DROPPED THE SAME DAY. PRODUCTIVITY DID NOT.", context:"Triple album Friday: Charli xcx, Tyla, and The Strokes all released the same day.", url:"https://newengen.com/insights/july-tiktok-trends/", source:"New Engen" },
+  { id:"2026-07-20", date:"JUL 20", dow:"MON", slogan:"NEW PM JUST DROPPED", context:"Days after winning the Labour leadership, Andy Burnham replaced Keir Starmer as UK Prime Minister.", url:"https://www.britannica.com/topic/Major-Events-of-2026", source:"Britannica" },
+  { id:"2026-07-19", date:"JUL 19", dow:"SUN", slogan:"SPAIN 1 · ARGENTINA 0 · METLIFE TRAFFIC ∞", context:"Spain beat Argentina in extra time to win the first 48-team World Cup, at MetLife Stadium.", url:"https://www.britannica.com/topic/Major-Events-of-2026", source:"Britannica" },
+  { id:"2026-07-18", date:"JUL 18", dow:"SAT", slogan:"ENGLAND BEAT FRANCE 6–4. IN SOCCER.", context:"The third-place game produced a ten-goal fever dream. Football is broken and we love it.", url:"https://www.britannica.com/topic/Major-Events-of-2026", source:"Britannica" },
+  { id:"2026-07-17", date:"JUL 17", dow:"FRI", slogan:"WATCHED NOLAN'S ODYSSEY. NOW I NARRATE MY COMMUTE.", context:"Christopher Nolan's The Odyssey opened — Damon, Zendaya, Holland, Pattinson — tracking for an $80–100M weekend.", url:"https://newengen.com/insights/july-tiktok-trends/", source:"New Engen" },
+  { id:"2026-07-07", date:"JUL 7", dow:"TUE", slogan:"THE CURSE IS REAL — BELGIUM 4, USA 1", context:"After the USMNT's exit, 'Trump card' curse memes flooded every timeline. #USABEL", url:"https://www.euronews.com/culture/2026/07/17/vikings-trump-cards-and-baby-fans-the-10-biggest-viral-moments-of-the-world-cup-2026", source:"Euronews" },
+  { id:"2026-07-06", date:"JUL 6", dow:"MON", slogan:"SANG WONDERWALL TOO HARD. LOST MY VOICE. — H. KANE", context:"Harry Kane croaked through a BBC interview after screaming Wonderwall post-Mexico. Liam Gallagher approved.", url:"https://www.espn.com/soccer/story/_/id/49395879/ranking-2026-world-cups-best-viral-moments-merlin-duck-viking-row", source:"ESPN" },
+  { id:"2026-07-04", date:"JUL 4", dow:"SAT", slogan:"AMERICA: 250 YEARS OF SENDING IT", context:"The semiquincentennial — 250 years since the Declaration of Independence. Fireworks budget: unlimited.", url:"https://www.britannica.com/topic/Major-Events-of-2026", source:"Britannica" },
+  { id:"2026-07-03", date:"JUL 3", dow:"FRI", slogan:"SWIFT–KELCE, MSG, 7/3/26 — I WAS (EMOTIONALLY) THERE", context:"Taylor Swift and Travis Kelce married at Madison Square Garden; 1,000 guests inside, thousands of fans outside.", url:"https://www.britannica.com/topic/Major-Events-of-2026", source:"Britannica" },
+  { id:"2026-07-01", date:"JUL 1", dow:"WED", slogan:"GOT ENGAGED ON THE EMPIRE STATE SPIRE. ARRESTED SHORTLY AFTER.", context:"Rooftoppers scaled the ESB antenna, unfurled a banner, got engaged on a ledge — then got booked. The banner became a meme template within hours.", url:"https://www.socialsamosa.com/samosa-snippets/july-2026-memes-politics-brands-trends-collided-online-12215913", source:"Social Samosa" },
+  { id:"2026-06-23", date:"JUN 23", dow:"TUE", slogan:"THE TARTAN ARMY DRANK BOSTON DRY (CONES ON EVERY STATUE)", context:"Scotland fans took over Boston — cones on statues, bars emptied, locals charmed. No Scotland, no party.", url:"https://www.euronews.com/culture/2026/07/17/vikings-trump-cards-and-baby-fans-the-10-biggest-viral-moments-of-the-world-cup-2026", source:"Euronews" },
+  { id:"2026-06-14", date:"JUN 14", dow:"SUN", slogan:"53 YEARS. BRUNSON 45. KNICKS FOREVER.", context:"Brunson dropped a Finals-record 45 in Game 5 as the Knicks beat the Spurs for their first title since 1973.", url:"https://www.nba.com/news/how-the-knicks-won-the-2026-nba-championship", source:"NBA.com" },
+  { id:"2026-05-07", date:"MAY 7", dow:"THU", slogan:"\u201CIT WAS JUST A LOVE TAP\u201D — U.S. FOREIGN POLICY, 2026", context:"Trump described U.S. strikes on Iran as a 'love tap' and insisted the ceasefire was still in effect.", url:"https://en.wikipedia.org/wiki/7_May_2026_United_States_strikes_on_Iran", source:"Wikipedia" }
+];
+
+const TAGS = ["MORE-SPORTS","MORE-MARKETS","MORE-POLITICS","MORE-MEME","LESS-TECH","TOO-LONG","TOO-NICHE","WRONG-STORY"];
+const KEY = "tee-day-ratings-v1";
+const TKEY = "tee-gh-token";
+
+let state = { idx: 0, ratings: {} };
+try {
+  const raw = localStorage.getItem(KEY);
+  if (raw) {
+    const p = JSON.parse(raw);
+    if (p && typeof p === "object") {
+      if (p.ratings) state.ratings = p.ratings;
+      if (typeof p.idx === "number" && p.idx >= 0 && p.idx < DAYS.length) state.idx = p.idx;
+    }
+  }
+} catch (e) {}
+
+/* ---------------- GitHub sync layer ---------------- */
+let token = "";
+try { token = localStorage.getItem(TKEY) || ""; } catch(e){}
+let pushTimer = null, fileSha = null;
+
+const apiUrl = () => "https://api.github.com/repos/" + CONFIG.owner + "/" + CONFIG.repo + "/contents/" + CONFIG.path;
+const ghHeaders = (t) => {
+  const h = { "Accept": "application/vnd.github+json" };
+  if (t) h["Authorization"] = "Bearer " + t;
+  return h;
+};
+function setSyncStatus(mode, msg){
+  const dot = document.getElementById("dot"), st = document.getElementById("syncst");
+  dot.className = "dot" + (mode === "on" ? " on" : mode === "err" ? " err" : "");
+  st.textContent = msg;
+}
+function b64encodeUnicode(str){
+  return btoa(unescape(encodeURIComponent(str)));
+}
+function b64decodeUnicode(str){
+  return decodeURIComponent(escape(atob(str.replace(/\n/g,""))));
+}
+async function pullRemote(){
+  try {
+    const res = await fetch(apiUrl() + "?ref=" + CONFIG.branch, { headers: ghHeaders(token) });
+    if (!res.ok) { if (res.status !== 404) setSyncStatus(token ? "err" : "", token ? "sync err " + res.status : "local only"); return; }
+    const j = await res.json();
+    fileSha = j.sha;
+    const remote = JSON.parse(b64decodeUnicode(j.content || "") || "{}");
+    if (remote && remote.ratings) {
+      // remote hydrates anything local doesn't have; local edits win
+      state.ratings = Object.assign({}, remote.ratings, state.ratings);
+      saveLocal(); render();
+    }
+    if (token) setSyncStatus("on", "synced");
+  } catch (e) { if (token) setSyncStatus("err", "sync err"); }
+}
+function schedulePush(){
+  if (!token) return;
+  setSyncStatus("", "saving…");
+  if (pushTimer) clearTimeout(pushTimer);
+  pushTimer = setTimeout(pushRemote, 1500);
+}
+async function pushRemote(retry){
+  if (!token) return;
+  const payload = JSON.stringify({ updated: new Date().toISOString(), ratings: state.ratings }, null, 2);
+  try {
+    if (fileSha === null) {
+      const head = await fetch(apiUrl() + "?ref=" + CONFIG.branch, { headers: ghHeaders(token) });
+      if (head.ok) fileSha = (await head.json()).sha; else fileSha = undefined;
+    }
+    const body = { message: "ratings update", content: b64encodeUnicode(payload), branch: CONFIG.branch };
+    if (fileSha) body.sha = fileSha;
+    const res = await fetch(apiUrl(), { method: "PUT", headers: Object.assign({ "Content-Type": "application/json" }, ghHeaders(token)), body: JSON.stringify(body) });
+    if (res.ok) {
+      const j = await res.json();
+      fileSha = j.content && j.content.sha;
+      setSyncStatus("on", "synced " + new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}));
+    } else if ((res.status === 409 || res.status === 422) && !retry) {
+      fileSha = null; return pushRemote(true);
+    } else if (res.status === 401 || res.status === 403) {
+      setSyncStatus("err", "token rejected — repaste");
+    } else {
+      setSyncStatus("err", "sync err " + res.status);
+    }
+  } catch (e) { setSyncStatus("err", "offline — saved locally"); }
+}
+document.getElementById("tokgo").onclick = () => {
+  const v = document.getElementById("tok").value.trim();
+  if (!v) return;
+  token = v;
+  try { localStorage.setItem(TKEY, v); } catch(e){}
+  document.getElementById("tok").value = "";
+  document.getElementById("tok").placeholder = "token saved on this device";
+  setSyncStatus("", "connecting…");
+  pullRemote().then(() => pushRemote());
+};
+/* --------------------------------------------------- */
+
+function saveLocal(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function save(){ saveLocal(); schedulePush(); }
+function cur(){ return DAYS[state.idx]; }
+function rating(){ return state.ratings[cur().id] || {}; }
+function setR(patch){
+  state.ratings[cur().id] = Object.assign({}, rating(), patch);
+  save(); render();
+}
+function isRated(id){
+  const x = state.ratings[id];
+  return !!(x && (x.t || x.h || x.e || x.w));
+}
+function sloganSize(s){
+  const n = s.length;
+  if (n <= 30) return 21; if (n <= 45) return 18; if (n <= 62) return 16; if (n <= 80) return 14.5; return 13;
+}
+function pills(containerId, field){
+  const el = document.getElementById(containerId);
+  el.innerHTML = "";
+  const val = rating()[field];
+  for (let n = 1; n <= 5; n++){
+    const b = document.createElement("button");
+    b.className = "pill" + (val === n ? " on" : "");
+    b.textContent = n;
+    b.onclick = () => { const p = {}; p[field] = (val === n ? null : n); setR(p); };
+    el.appendChild(b);
+  }
+}
+function render(){
+  const d = cur(), r = rating();
+  const rated = DAYS.filter(x => isRated(x.id)).length;
+  document.getElementById("count").textContent = rated + "/" + DAYS.length + " rated";
+  document.getElementById("prog").style.width = (rated / DAYS.length * 100) + "%";
+  document.getElementById("daydate").innerHTML = d.date + ' <small>· ' + d.dow + '</small>';
+  document.getElementById("daymeta").textContent = "DAY " + (DAYS.length - state.idx) + " OF " + DAYS.length + " · 2026";
+  const slog = document.getElementById("slogan");
+  slog.textContent = d.slogan;
+  slog.style.fontSize = sloganSize(d.slogan) + "px";
+  document.getElementById("ctx").textContent = d.context;
+  const a = document.getElementById("srclink");
+  a.href = d.url; a.textContent = "read the story · " + d.source + " ↗";
+  document.getElementById("saved").style.display = isRated(d.id) ? "block" : "none";
+  document.getElementById("prev").disabled = state.idx === 0;
+  document.getElementById("next").disabled = state.idx === DAYS.length - 1;
+  pills("t","t"); pills("h","h"); pills("e","e");
+  document.getElementById("wY").className = "wearbtn" + (r.w === "Y" ? " on" : "");
+  document.getElementById("wN").className = "wearbtn" + (r.w === "N" ? " on" : "");
+  const tagsEl = document.getElementById("tags");
+  tagsEl.innerHTML = "";
+  TAGS.forEach(tag => {
+    const on = (r.tags || []).includes(tag);
+    const b = document.createElement("button");
+    b.className = "tag" + (on ? " on" : "");
+    b.textContent = tag;
+    b.onclick = () => {
+      const curTags = rating().tags || [];
+      setR({ tags: on ? curTags.filter(t => t !== tag) : curTags.concat([tag]) });
+    };
+    tagsEl.appendChild(b);
+  });
+  document.getElementById("crown").className = "crown" + (r.crown ? " on" : "");
+  document.getElementById("kill").className = "kill" + (r.kill ? " on" : "");
+  document.getElementById("note").innerHTML = DAYS.length + " verified days on the rack (May 7 → Aug 11, 2026).<br/>With sync on, every tap lands in ratings.json — tell Claude “check the rack” anytime.";
+}
+
+document.getElementById("prev").onclick = () => { if (state.idx > 0){ state.idx--; saveLocal(); render(); } };
+document.getElementById("next").onclick = () => { if (state.idx < DAYS.length - 1){ state.idx++; saveLocal(); render(); } };
+document.getElementById("wY").onclick = () => setR({ w: rating().w === "Y" ? null : "Y" });
+document.getElementById("wN").onclick = () => setR({ w: rating().w === "N" ? null : "N" });
+document.getElementById("crown").onclick = () => setR({ crown: !rating().crown, kill: false });
+document.getElementById("kill").onclick = () => setR({ kill: !rating().kill, crown: false });
+document.getElementById("nextUnrated").onclick = () => {
+  for (let i = 1; i <= DAYS.length; i++){
+    const j = (state.idx + i) % DAYS.length;
+    if (!isRated(DAYS[j].id)){ state.idx = j; saveLocal(); render(); return; }
+  }
+};
+document.getElementById("copy").onclick = async () => {
+  const lines = [];
+  for (const d of DAYS){
+    const x = state.ratings[d.id];
+    if (!x || !isRated(d.id)) continue;
+    const parts = [d.date.replace(" ","") + ":"];
+    if (x.t) parts.push("T" + x.t);
+    if (x.h) parts.push("H" + x.h);
+    if (x.e) parts.push("E" + x.e);
+    if (x.w) parts.push("W-" + x.w);
+    if (x.crown) parts.push("🏆");
+    if (x.kill) parts.push("💀");
+    if (x.tags && x.tags.length) parts.push(x.tags.join(" "));
+    lines.push(parts.join(" "));
+  }
+  const text = lines.length ? "TEE RATINGS\n" + lines.join("\n") : "No ratings yet.";
+  const btn = document.getElementById("copy");
+  const done = () => { btn.textContent = "COPIED ✓"; btn.classList.add("done"); setTimeout(() => { btn.textContent = "COPY RESULTS"; btn.classList.remove("done"); }, 1800); };
+  try { await navigator.clipboard.writeText(text); done(); }
+  catch(e){
+    const ta = document.createElement("textarea");
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand("copy"); document.body.removeChild(ta); done();
+  }
+};
+
+if (token) {
+  document.getElementById("tok").placeholder = "token saved on this device";
+  setSyncStatus("", "connecting…");
+}
+render();
+pullRemote().then(() => { if (token) pushRemote(); });
+</script>
+</body>
+</html>
