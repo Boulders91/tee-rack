@@ -59,6 +59,8 @@
   .tags{display:flex;flex-wrap:wrap;gap:6px}
   .tag{padding:6px 10px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--faint);font-size:11px;letter-spacing:.04em}
   .tag.on{border-color:var(--chalk);background:rgba(143,183,204,.15);color:var(--chalk)}
+  .notebox{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:6px;color:var(--cotton);font-family:var(--body);font-size:13px;line-height:1.5;padding:9px 10px;resize:vertical;min-height:64px}
+  .notebox::placeholder{color:var(--faint)}
   .ck{display:flex;gap:8px;margin-top:14px}
   .ck button{flex:1;height:44px;border-radius:6px;border:1.5px solid var(--line);background:transparent;color:var(--cotton-dim);font-weight:700;font-size:13px}
   .ck .crown.on{border-color:#e8b93b;background:rgba(232,185,59,.16);color:#e8b93b}
@@ -126,6 +128,8 @@
     </div>
     <div class="tags-lbl">DIRECTION TAGS (OPTIONAL)</div>
     <div class="tags" id="tags"></div>
+    <div class="tags-lbl">NOTES — FREE REIN</div>
+    <textarea id="noteBox" class="notebox" placeholder="anything — rewrite the slogan, roast it, pitch the shirt you'd actually wear"></textarea>
     <div class="ck">
       <button class="crown" id="crown">🏆 CROWN IT</button>
       <button class="kill" id="kill">💀 KILL IT</button>
@@ -168,9 +172,16 @@ const DAYS = [
   { id:"2026-07-04", date:"JUL 4", dow:"SAT", slogan:"AMERICA: 250 YEARS OF SENDING IT", context:"The semiquincentennial — 250 years since the Declaration of Independence. Fireworks budget: unlimited.", url:"https://www.britannica.com/topic/Major-Events-of-2026", source:"Britannica" },
   { id:"2026-07-03", date:"JUL 3", dow:"FRI", slogan:"SWIFT–KELCE, MSG, 7/3/26 — I WAS (EMOTIONALLY) THERE", context:"Taylor Swift and Travis Kelce married at Madison Square Garden; 1,000 guests inside, thousands of fans outside.", url:"https://www.britannica.com/topic/Major-Events-of-2026", source:"Britannica" },
   { id:"2026-07-01", date:"JUL 1", dow:"WED", slogan:"GOT ENGAGED ON THE EMPIRE STATE SPIRE. ARRESTED SHORTLY AFTER.", context:"Rooftoppers scaled the ESB antenna, unfurled a banner, got engaged on a ledge — then got booked. The banner became a meme template within hours.", url:"https://www.socialsamosa.com/samosa-snippets/july-2026-memes-politics-brands-trends-collided-online-12215913", source:"Social Samosa" },
+  { id:"2026-06-25", date:"JUN 25", dow:"THU", slogan:"WAITED 13 YEARS. PRE-ORDERED IN 13 SECONDS.", context:"GTA VI pre-orders opened worldwide — $79.99, launching Nov 19 after slipping from May.", url:"https://www.urdupure.com/blog/the-9-biggest-news-stories-of-2026-that-are-shaping-the-world", source:"UrduPure" },
   { id:"2026-06-23", date:"JUN 23", dow:"TUE", slogan:"THE TARTAN ARMY DRANK BOSTON DRY (CONES ON EVERY STATUE)", context:"Scotland fans took over Boston — cones on statues, bars emptied, locals charmed. No Scotland, no party.", url:"https://www.euronews.com/culture/2026/07/17/vikings-trump-cards-and-baby-fans-the-10-biggest-viral-moments-of-the-world-cup-2026", source:"Euronews" },
+  { id:"2026-06-22", date:"JUN 22", dow:"MON", slogan:"PROPOSED DURING THE MATCH. READ THE ROOM.", context:"A Uruguayan couple's stadium proposal landed at the worst possible on-field moment, and the clip went everywhere.", url:"https://www.espn.com/soccer/story/_/id/49395879/ranking-2026-world-cups-best-viral-moments-merlin-duck-viking-row", source:"ESPN" },
   { id:"2026-06-14", date:"JUN 14", dow:"SUN", slogan:"53 YEARS. BRUNSON 45. KNICKS FOREVER.", context:"Brunson dropped a Finals-record 45 in Game 5 as the Knicks beat the Spurs for their first title since 1973.", url:"https://www.nba.com/news/how-the-knicks-won-the-2026-nba-championship", source:"NBA.com" },
-  { id:"2026-05-07", date:"MAY 7", dow:"THU", slogan:"\u201CIT WAS JUST A LOVE TAP\u201D — U.S. FOREIGN POLICY, 2026", context:"Trump described U.S. strikes on Iran as a 'love tap' and insisted the ceasefire was still in effect.", url:"https://en.wikipedia.org/wiki/7_May_2026_United_States_strikes_on_Iran", source:"Wikipedia" }
+  { id:"2026-06-12", date:"JUN 12", dow:"FRI", slogan:"EMOTIONALLY UNAVAILABLE. OLIVIA DROPPED.", context:"Olivia Rodrigo's new album landed and breakup-confessional formats ate the feed for weeks.", url:"https://newengen.com/insights/june-tiktok-trends/", source:"New Engen" },
+  { id:"2026-06-11", date:"JUN 11", dow:"THU", slogan:"104 MATCHES. 39 DAYS. ZERO PRODUCTIVITY.", context:"The biggest World Cup in history kicked off at Estadio Azteca — 48 teams, 16 cities, 3 countries.", url:"https://www.urdupure.com/blog/the-biggest-global-news-stories-of-june-2026", source:"UrduPure" },
+  { id:"2026-05-27", date:"MAY 27", dow:"WED", slogan:"GROUNDED RIGHT BEFORE THE IPO — RELATABLE", context:"The FAA declared Starship's Flight 12 failure a mishap and grounded the program weeks before SpaceX's anticipated IPO.", url:"https://www.urdupure.com/blog/the-biggest-global-news-stories-of-june-2026", source:"UrduPure" },
+  { id:"2026-05-22", date:"MAY 22", dow:"FRI", slogan:"RAPID UNSCHEDULED DISASSEMBLY", context:"Starship V3's debut completed most objectives — then the booster went full fireworks on the boostback burn.", url:"https://www.urdupure.com/blog/the-biggest-global-news-stories-of-june-2026", source:"UrduPure" },
+  { id:"2026-05-07", date:"MAY 7", dow:"THU", slogan:"\u201CIT WAS JUST A LOVE TAP\u201D — U.S. FOREIGN POLICY, 2026", context:"Trump described U.S. strikes on Iran as a 'love tap' and insisted the ceasefire was still in effect.", url:"https://en.wikipedia.org/wiki/7_May_2026_United_States_strikes_on_Iran", source:"Wikipedia" },
+  { id:"2026-05-01", date:"MAY 1", dow:"FRI", slogan:"UAE LEFT THE OPEC GROUP CHAT", context:"The United Arab Emirates withdrew from OPEC, and oil markets spent the day processing the exit.", url:"https://www.britannica.com/topic/Major-Events-of-2026", source:"Britannica" }
 ];
 
 const TAGS = ["MORE-SPORTS","MORE-MARKETS","MORE-POLITICS","MORE-MEME","LESS-TECH","TOO-LONG","TOO-NICHE","WRONG-STORY"];
@@ -185,6 +196,7 @@ try {
     if (p && typeof p === "object") {
       if (p.ratings) state.ratings = p.ratings;
       if (typeof p.idx === "number" && p.idx >= 0 && p.idx < DAYS.length) state.idx = p.idx;
+      if (p.dayId) { const di = DAYS.findIndex(d => d.id === p.dayId); if (di >= 0) state.idx = di; }
     }
   }
 } catch (e) {}
@@ -268,7 +280,7 @@ document.getElementById("tokgo").onclick = () => {
 };
 /* --------------------------------------------------- */
 
-function saveLocal(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+function saveLocal(){ try{ state.dayId = DAYS[state.idx].id; localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
 function save(){ saveLocal(); schedulePush(); }
 function cur(){ return DAYS[state.idx]; }
 function rating(){ return state.ratings[cur().id] || {}; }
@@ -278,7 +290,7 @@ function setR(patch){
 }
 function isRated(id){
   const x = state.ratings[id];
-  return !!(x && (x.t || x.h || x.e || x.w));
+  return !!(x && (x.t || x.h || x.e || x.w || (x.n && x.n.trim())));
 }
 function sloganSize(s){
   const n = s.length;
@@ -328,9 +340,11 @@ function render(){
     };
     tagsEl.appendChild(b);
   });
+  const nb = document.getElementById("noteBox");
+  if (document.activeElement !== nb) nb.value = r.n || "";
   document.getElementById("crown").className = "crown" + (r.crown ? " on" : "");
   document.getElementById("kill").className = "kill" + (r.kill ? " on" : "");
-  document.getElementById("note").innerHTML = DAYS.length + " verified days on the rack (May 7 → Aug 11, 2026).<br/>With sync on, every tap lands in ratings.json — tell Claude “check the rack” anytime.";
+  document.getElementById("note").innerHTML = DAYS.length + " verified days on the rack (May 1 → Aug 11, 2026). Notes sync too.<br/>With sync on, every tap lands in ratings.json — tell Claude “check the rack” anytime.";
 }
 
 document.getElementById("prev").onclick = () => { if (state.idx > 0){ state.idx--; saveLocal(); render(); } };
@@ -339,6 +353,11 @@ document.getElementById("wY").onclick = () => setR({ w: rating().w === "Y" ? nul
 document.getElementById("wN").onclick = () => setR({ w: rating().w === "N" ? null : "N" });
 document.getElementById("crown").onclick = () => setR({ crown: !rating().crown, kill: false });
 document.getElementById("kill").onclick = () => setR({ kill: !rating().kill, crown: false });
+document.getElementById("noteBox").oninput = (ev) => {
+  state.ratings[cur().id] = Object.assign({}, rating(), { n: ev.target.value });
+  saveLocal(); schedulePush();
+  document.getElementById("saved").style.display = "block";
+};
 document.getElementById("nextUnrated").onclick = () => {
   for (let i = 1; i <= DAYS.length; i++){
     const j = (state.idx + i) % DAYS.length;
@@ -358,6 +377,7 @@ document.getElementById("copy").onclick = async () => {
     if (x.crown) parts.push("🏆");
     if (x.kill) parts.push("💀");
     if (x.tags && x.tags.length) parts.push(x.tags.join(" "));
+    if (x.n && x.n.trim()) parts.push('"' + x.n.trim() + '"');
     lines.push(parts.join(" "));
   }
   const text = lines.length ? "TEE RATINGS\n" + lines.join("\n") : "No ratings yet.";
